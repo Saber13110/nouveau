@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../../../services/notification.service';
 
 // TODO: Backend - Create User Interface
 /*
@@ -99,11 +102,9 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
-    // TODO: Inject AuthService
-    // private authService: AuthService,
-    // TODO: Inject NotificationService
-    // private notificationService: NotificationService
+    private router: Router,
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) {
     this.registerForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -142,41 +143,22 @@ export class RegisterComponent implements OnInit {
       
       try {
         const formData = this.registerForm.value;
-        
-        // TODO: Backend - Implement registration service
-        // const result = await this.authService.register({
-        //   firstName: formData.firstName,
-        //   lastName: formData.lastName,
-        //   email: formData.email,
-        //   password: formData.password
-        // });
 
-        // TODO: Backend - Send welcome email
-        /*
-        await this.emailService.sendWelcomeEmail({
-          to: formData.email,
+        await lastValueFrom(this.authService.register({
           firstName: formData.firstName,
-          verificationToken: result.verificationToken
-        });
-        */
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password
+        }));
 
-        // TODO: Backend - Handle successful registration
-        // this.notificationService.success('Inscription réussie ! Veuillez vérifier votre email.');
-        
-        // Redirection vers la page de vérification d'email
-        this.router.navigate(['/auth/verify-email'], { 
-          queryParams: { email: formData.email } 
+        this.notificationService.show('Inscription réussie ! Veuillez vérifier votre email.', 'success');
+
+        this.router.navigate(['/auth/verify-email'], {
+          queryParams: { email: formData.email }
         });
       } catch (error) {
-        // TODO: Backend - Handle registration errors
-        /*
-        if (error.code === 'EMAIL_EXISTS') {
-          this.notificationService.error('Cette adresse email est déjà utilisée.');
-        } else {
-          this.notificationService.error('Une erreur est survenue lors de l\'inscription.');
-        }
+        this.notificationService.show('Une erreur est survenue lors de l\'inscription.', 'error');
         console.error('Registration error:', error);
-        */
       } finally {
         this.isLoading = false;
       }

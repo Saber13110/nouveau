@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../../../services/notification.service';
 
 // TODO: Backend - Create Login Interface
 /*
@@ -95,10 +98,9 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
-    // TODO: Inject Services
-    // private authService: AuthService,
-    // private notificationService: NotificationService,
+    private router: Router,
+    private authService: AuthService,
+    private notificationService: NotificationService
     // private storageService: StorageService
   ) {
     this.loginForm = this.fb.group({
@@ -133,63 +135,14 @@ export class LoginComponent implements OnInit {
       try {
         const credentials = this.loginForm.value;
 
-        // TODO: Implement authentication service call
-        /*
-        const response = await this.authService.login(credentials);
-
-        if (response.requires2FA) {
-          this.router.navigate(['/auth/2fa'], {
-            queryParams: { email: credentials.email }
-          });
-          return;
-        }
-
-        // Handle "Remember Me"
-        if (credentials.rememberMe) {
-          this.storageService.setItem('remembered_email', credentials.email);
-        } else {
-          this.storageService.removeItem('remembered_email');
-        }
-
-        // Store tokens
-        this.authService.setTokens(response.token, response.refreshToken);
-
-        // Show success message
-        this.notificationService.success('Connexion réussie !');
-
-        // Redirect to dashboard
+        await lastValueFrom(this.authService.login(credentials));
+        this.notificationService.show('Connexion réussie !', 'success');
         this.router.navigate(['/dashboard']);
-        */
-
-        // Mock login delay (remove in production)
-        setTimeout(() => {
-          this.isLoading = false;
-          alert('Connexion réussie ! (Version démo)');
-          this.router.navigate(['/dashboard']);
-        }, 2000);
 
       } catch (error) {
         this.isLoading = false;
-
-        // TODO: Handle specific error cases
-        /*
-        switch (error.code) {
-          case 'INVALID_CREDENTIALS':
-            this.notificationService.error('Email ou mot de passe incorrect');
-            break;
-          case 'ACCOUNT_LOCKED':
-            this.notificationService.error('Compte temporairement bloqué. Veuillez réessayer plus tard.');
-            break;
-          case 'EMAIL_NOT_VERIFIED':
-            this.router.navigate(['/auth/verify-email'], {
-              queryParams: { email: this.loginForm.get('email')?.value }
-            });
-            break;
-          default:
-            this.notificationService.error('Une erreur est survenue lors de la connexion');
-            console.error('Login error:', error);
-        }
-        */
+        this.notificationService.show('Une erreur est survenue lors de la connexion', 'error');
+        console.error('Login error:', error);
       }
     } else {
       Object.keys(this.loginForm.controls).forEach(key => {
