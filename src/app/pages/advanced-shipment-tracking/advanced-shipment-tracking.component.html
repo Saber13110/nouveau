@@ -1,0 +1,206 @@
+
+
+<!-- Sub Header -->
+<div class="sub-header">
+  <div class="sub-header-container">
+    <h1 class="page-title">Globex Professional Tracking</h1>
+    
+    <ul class="sub-nav">
+      <li><a href="#">What's New</a></li>
+      <li><a href="#" (click)="showSettings = true">Settings</a></li>
+      <li><a href="#">Get Help</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <!-- Welcome Section -->
+  <div class="welcome-section animate-fade-in">
+    <div class="welcome-content">
+      <h2 class="welcome-title">Welcome back, ayoub</h2>
+      <p class="welcome-subtitle">Track and manage your shipments with our professional dashboard</p>
+    </div>
+    <div class="welcome-actions">
+      <button class="btn-primary" (click)="showSettings = true">
+        <i class="fas fa-cog"></i>
+        MANAGE DASHBOARD
+      </button>
+    </div>
+  </div>
+
+  <!-- Dashboard Stats -->
+  <div class="dashboard-stats">
+    <div class="stat-card exceptions animate-fade-in" style="animation-delay: 0.1s">
+      <div class="stat-content">
+        <div class="stat-icon exceptions">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ exceptionCount }}</div>
+          <div class="stat-label">EXCEPTIONS</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card created animate-fade-in" style="animation-delay: 0.2s">
+      <div class="stat-content">
+        <div class="stat-icon created">
+          <i class="fas fa-tag"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ pendingCount }}</div>
+          <div class="stat-label">LABEL CREATED</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card delivered animate-fade-in" style="animation-delay: 0.3s">
+      <div class="stat-content">
+        <div class="stat-icon delivered">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ deliveredCount }}</div>
+          <div class="stat-label">DELIVERED</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-section animate-fade-in" style="animation-delay: 0.4s">
+    <!-- Table Controls -->
+    <div class="table-controls">
+      <div class="shipments-info">
+        <div class="shipments-title">All Shipments</div>
+        <div class="shipments-count">
+          Showing {{ filteredData.length }} of {{ allShipments.length }} shipments
+        </div>
+      </div>
+      
+      <div class="table-actions">
+        <button class="control-btn" (click)="toggleFilters()">
+          <i class="fas fa-filter"></i>
+          FILTERS
+        </button>
+        
+        <button class="control-btn" (click)="exportData('csv')">
+          <i class="fas fa-download"></i>
+          EXPORT
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters Panel -->
+    <div class="filters-panel" [class.active]="showFilters">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">Tracking Number</label>
+          <input type="text" class="filter-input" [(ngModel)]="filterForm.tracking" (input)="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Status</label>
+          <select class="filter-select" [(ngModel)]="filterForm.status" (change)="applyFilters()">
+            <option value="">All Statuses</option>
+            <option value="delivered">Delivered</option>
+            <option value="in-transit">In Transit</option>
+            <option value="exception">Exception</option>
+            <option value="pending">Label Created</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Date From</label>
+          <input type="date" class="filter-input" [(ngModel)]="filterForm.dateFrom" (change)="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Date To</label>
+          <input type="date" class="filter-input" [(ngModel)]="filterForm.dateTo" (change)="applyFilters()">
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn-secondary" (click)="clearFilters()">
+          <i class="fas fa-times"></i> Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table class="shipments-table">
+        <thead>
+          <tr>
+            <th (click)="sortTable('tracking')">TRACKING NUMBER</th>
+            <th (click)="sortTable('status')">STATUS</th>
+            <th (click)="sortTable('deliveryDate')">DELIVERY DATE</th>
+            <th (click)="sortTable('deliveryTime')">DELIVERY TIME</th>
+            <th (click)="sortTable('shipper')">SHIPPER NAME</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let shipment of filteredData">
+            <td>{{ shipment.tracking }}</td>
+            <td>
+              <span class="status-badge {{ shipment.status }}">
+                <i [class]="getStatusIcon(shipment.status)"></i>
+                {{ getStatusText(shipment.status) }}
+              </span>
+            </td>
+            <td>{{ formatDate(shipment.deliveryDate) }}</td>
+            <td>{{ shipment.deliveryTime }}</td>
+            <td>{{ shipment.shipper }}</td>
+            <td>
+              <button class="btn-secondary" (click)="viewShipmentDetails(shipment)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Shipment Details Modal -->
+<div class="modal-overlay" [class.active]="showShipmentDetails" (click)="closeShipmentDetails()">
+  <div class="modal" *ngIf="selectedShipment" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Shipment Details</h3>
+      <button class="modal-close" (click)="closeShipmentDetails()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <div>
+          <label class="filter-label">Tracking Number</label>
+          <div style="font-weight: 600; color: var(--blue-600);">{{ selectedShipment.tracking }}</div>
+        </div>
+        <div>
+          <label class="filter-label">Status</label>
+          <span class="status-badge {{ selectedShipment.status }}">
+            <i [class]="getStatusIcon(selectedShipment.status)"></i>
+            {{ getStatusText(selectedShipment.status) }}
+          </span>
+        </div>
+        <div>
+          <label class="filter-label">Shipper</label>
+          <div>{{ selectedShipment.shipper }}</div>
+        </div>
+        <div>
+          <label class="filter-label">Destination</label>
+          <div>{{ selectedShipment.destination }}</div>
+        </div>
+        <div>
+          <label class="filter-label">Delivery Date</label>
+          <div>{{ formatDate(selectedShipment.deliveryDate) }}</div>
+        </div>
+        <div>
+          <label class="filter-label">Delivery Time</label>
+          <div>{{ selectedShipment.deliveryTime }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

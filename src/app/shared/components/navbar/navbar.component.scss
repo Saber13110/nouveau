@@ -1,0 +1,312 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #4d148c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+
+  &__logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #ff6600;
+    }
+  }
+  
+  &__toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: #ff6600;
+    }
+  }
+
+  &__menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 1.5rem;
+    align-items: center;
+
+    li {
+      position: relative;
+
+      a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover, &.active {
+          background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        i {
+          font-size: 0.8em;
+          transition: transform 0.3s ease;
+        }
+      }
+
+      &.dropdown {
+        .dropdown-toggle {
+          cursor: pointer;
+          
+          &:hover i {
+            transform: rotate(180deg);
+          }
+        }
+
+        .dropdown__menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          padding: 1rem;
+          min-width: 280px;
+          margin-top: 0.5rem;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s ease;
+          list-style: none;
+
+          &.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+          }
+
+          li {
+            margin: 0;
+            padding: 0;
+
+            a {
+              color: #333;
+              padding: 0.75rem 1rem;
+              display: block;
+              width: 100%;
+              border-radius: 4px;
+              transition: all 0.3s ease;
+
+              &:hover {
+                background-color: rgba(77, 20, 140, 0.1);
+                color: #4d148c;
+              }
+            }
+
+            hr {
+              border: none;
+              border-top: 1px solid #eee;
+              margin: 0.5rem 0;
+            }
+          }
+
+          h4 {
+            color: #4d148c;
+            margin: 0 0 1rem;
+            padding: 0 1rem;
+            font-size: 0.9rem;
+          }
+
+          .tracking-input-group {
+            padding: 0 1rem;
+            margin-bottom: 1rem;
+
+            input {
+              width: 100%;
+              padding: 0.75rem;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              margin-bottom: 0.5rem;
+              transition: all 0.3s ease;
+
+              &:focus {
+                border-color: #4d148c;
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(77, 20, 140, 0.1);
+              }
+            }
+
+            .btn-track {
+              width: 100%;
+              padding: 0.75rem;
+              background: #ff6600;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.5rem;
+
+              &:hover {
+                background: darken(#ff6600, 10%);
+              }
+
+              i {
+                font-size: 0.8em;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.active {
+      display: flex;
+    }
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .search-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      color: white;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #ff6600;
+      }
+    }
+
+    .search-input {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+
+      &:focus {
+        border-color: #ff6600;
+      }
+    }
+  }
+}
+
+.notification-badge {
+  background: #ff6600;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-size: 10px;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  text-align: center;
+}
+
+@media (max-width: 991px) {
+  .navbar {
+    &__toggle {
+      display: block;
+      z-index: 2;
+    }
+
+    &__menu {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #4d148c;
+      padding: 5rem 2rem 2rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+      overflow-y: auto;
+
+      &.active {
+        display: flex;
+      }
+
+      li {
+        &.dropdown {
+          .dropdown__menu {
+            position: static;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            margin: 0.5rem 0;
+            padding: 1rem;
+            transform: none;
+            opacity: 1;
+            visibility: visible;
+            display: none;
+
+            &.show {
+              display: block;
+            }
+
+            li a {
+              color: white;
+              
+              &:hover {
+                background: rgba(255, 255, 255, 0.2);
+              }
+            }
+
+            h4 {
+              color: white;
+            }
+
+            hr {
+              border-color: rgba(255, 255, 255, 0.2);
+            }
+          }
+
+          .dropdown-toggle i {
+            transition: transform 0.3s ease;
+          }
+
+          &.active .dropdown-toggle i {
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
+  }
+}

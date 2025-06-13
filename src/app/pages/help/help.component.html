@@ -1,0 +1,114 @@
+<!-- ===== BREADCRUMB ===== -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+    <div class="container">
+        <ol class="breadcrumb__list">
+            <li class="breadcrumb__item">
+                <a routerLink="/" class="breadcrumb__link">Home</a>
+            </li>
+            <li class="breadcrumb__item">
+                <span class="breadcrumb__separator" aria-hidden="true">/</span>
+                <a routerLink="/help" class="breadcrumb__link">Help & Support</a>
+            </li>
+            <li class="breadcrumb__item">
+                <span class="breadcrumb__separator" aria-hidden="true">/</span>
+                <span class="breadcrumb__current" aria-current="page">Tracking Help</span>
+            </li>
+        </ol>
+    </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main" role="main">
+    <div class="container">
+        <!-- ===== PAGE HERO ===== -->
+        <section class="page-hero animate-fade-in" aria-labelledby="hero-title">
+            <h1 id="hero-title" class="page-hero__title">Tracking Help Center</h1>
+            <p class="page-hero__subtitle">Get help with tracking your packages, understanding delivery status, and resolving tracking issues</p>
+        </section>
+
+        <!-- ===== QUICK SEARCH ===== -->
+        <section class="quick-search animate-fade-in" aria-labelledby="search-title">
+            <div class="search-card">
+                <form class="search-form" (ngSubmit)="quickTrack()" role="search" aria-label="Quick package tracking">
+                    <div class="form-group">
+                        <label for="quick-tracking" class="form-label">Quick Track Your Package</label>
+                        <input 
+                            type="text" 
+                            id="quick-tracking" 
+                            class="form-input" 
+                            placeholder="Enter tracking number (e.g., GLX123456789)"
+                            aria-describedby="tracking-help"
+                            [(ngModel)]="trackingNumber"
+                            name="trackingNumber"
+                        >
+                    </div>
+                    <button type="submit" class="btn btn-primary search-btn">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        Track Now
+                    </button>
+                </form>
+                <div id="tracking-help" class="sr-only">Enter your tracking number to get instant package status</div>
+            </div>
+        </section>
+
+        <!-- ===== NAVIGATION TABS ===== -->
+        <nav class="nav-tabs animate-fade-in" role="tablist" aria-label="Help categories">
+            <button 
+                class="nav-tab" 
+                [class.active]="currentTab === 'tracking-advice'"
+                role="tab" 
+                [attr.aria-selected]="currentTab === 'tracking-advice'"
+                aria-controls="tracking-advice" 
+                id="advice-tab" 
+                (click)="switchTab('tracking-advice')"
+            >
+                <i class="fas fa-lightbulb" aria-hidden="true"></i>
+                Tracking Advice
+            </button>
+            <button 
+                class="nav-tab" 
+                [class.active]="currentTab === 'tracking-tools'"
+                role="tab" 
+                [attr.aria-selected]="currentTab === 'tracking-tools'"
+                aria-controls="tracking-tools" 
+                id="tools-tab" 
+                (click)="switchTab('tracking-tools')"
+            >
+                <i class="fas fa-tools" aria-hidden="true"></i>
+                Tracking Tools
+            </button>
+            <button 
+                class="nav-tab" 
+                [class.active]="currentTab === 'faqs'"
+                role="tab" 
+                [attr.aria-selected]="currentTab === 'faqs'"
+                aria-controls="faqs" 
+                id="faqs-tab" 
+                (click)="switchTab('faqs')"
+            >
+                <i class="fas fa-question-circle" aria-hidden="true"></i>
+                FAQs
+            </button>
+            <button 
+                class="nav-tab" 
+                [class.active]="currentTab === 'contact-us'"
+                role="tab" 
+                [attr.aria-selected]="currentTab === 'contact-us'"
+                aria-controls="contact-us" 
+                id="contact-tab" 
+                (click)="switchTab('contact-us')"
+            >
+                <i class="fas fa-headset" aria-hidden="true"></i>
+                Contact Us
+            </button>
+        </nav>
+
+        <!-- ===== TAB CONTENT ===== -->
+        <div [ngSwitch]="currentTab">
+            <app-tracking-advice *ngSwitchCase="'tracking-advice'" class="tab-content active"></app-tracking-advice>
+            <app-tracking-tools *ngSwitchCase="'tracking-tools'" class="tab-content active"></app-tracking-tools>
+            <app-faqs *ngSwitchCase="'faqs'" class="tab-content active"></app-faqs>
+            <app-contact-us *ngSwitchCase="'contact-us'" class="tab-content active"></app-contact-us>
+        </div>
+    </div>
+</main> 

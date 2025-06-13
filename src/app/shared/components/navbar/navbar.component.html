@@ -1,0 +1,95 @@
+<header class="header">
+    <nav class="navbar">
+      <a class="navbar__logo" routerLink="/">FedEx</a>
+  
+      <button class="navbar__toggle" (click)="toggleMobileMenu()">
+        <i class="fas" [ngClass]="{'fa-bars': !isMobileMenuOpen, 'fa-times': isMobileMenuOpen}"></i>
+      </button>
+  
+      <ul class="navbar__menu" [class.active]="isMobileMenuOpen">
+        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+  
+        <li class="dropdown">
+          <a class="dropdown-toggle" (click)="toggleDropdown($event, 'tracking')">
+            Tracking <i class="fas fa-chevron-down"></i>
+          </a>
+          <ul class="dropdown__menu" [class.show]="activeDropdown === 'tracking'">
+            <li>
+              <h4>Tracking ID</h4>
+              <div class="tracking-input-group">
+                <input type="text" [(ngModel)]="quickTrackingNumber" placeholder="Insert Tracking ID Number" />
+                <button class="btn-track" (click)="quickTrack()">
+                  TRACK <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </li>
+            <li><hr /></li>
+            <li>
+              <a routerLink="/tracking" [queryParams]="{type: 'advanced'}">
+                Advanced Shipment Tracking
+              </a>
+            </li>
+            <li>
+              <a routerLink="/advanced-tracking">
+                Advanced Shipment Management
+              </a>
+            </li>
+            <li>
+              <a routerLink="/tracking" [queryParams]="{type: 'mobile'}">
+                Track by Mobile
+              </a>
+            </li>
+            <li>
+              <a routerLink="/tracking">
+                <strong>All Tracking Services</strong>
+              </a>
+            </li>
+          </ul>
+        </li>
+  
+        <li>
+          <a routerLink="/history" routerLinkActive="active">History</a>
+        </li>
+  
+        <li class="dropdown">
+          <a class="dropdown-toggle" (click)="toggleDropdown($event, 'help')">
+            Help <i class="fas fa-chevron-down"></i>
+          </a>
+          <ul class="dropdown__menu" [class.show]="activeDropdown === 'help'">
+            <li><a routerLink="/help" fragment="advice">Advice</a></li>
+            <li><a routerLink="/help" fragment="tools">Tracking Tools</a></li>
+            <li><a routerLink="/help" fragment="faq">Tracking FAQs</a></li>
+            <li><a routerLink="/help" fragment="contact">Contact Us</a></li>
+          </ul>
+        </li>
+  
+        <li>
+          <a routerLink="/about" routerLinkActive="active">About</a>
+        </li>
+        <li>
+          <a routerLink="/find-location" routerLinkActive="active">Find Location</a>
+        </li>
+  
+        <li>
+          <a routerLink="/notifications" routerLinkActive="active">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+          </a>
+        </li>
+  
+        <li>
+          <a routerLink="/auth/login" routerLinkActive="active">
+            <i class="fas fa-user-circle"></i> Login/Register
+          </a>
+        </li>
+      </ul>
+  
+      <div class="navbar__search">
+        <button class="search-btn" (click)="toggleSearch()">
+          <i class="fas fa-search"></i>
+        </button>
+        <input *ngIf="showSearch" type="text" class="search-input" placeholder="Rechercher..." />
+      </div>
+    </nav>
+  </header>
+  

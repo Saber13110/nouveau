@@ -1,0 +1,15 @@
+<div class="notification-container">
+  <div *ngFor="let notification of notifications; let i = index" 
+       class="notification {{ notification.type }}" 
+       [class.show]="notification.visible">
+    <div class="notification-icon">
+      <i [class]="getNotificationIcon(notification.type)"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">{{ notification.title }}</div>
+      <div class="notification-message">{{ notification.message }}</div>
+    </div>
+    <button class="notification-close" (click)="dismissNotification(i)">×</button>
+    <div class="notification-progress"></div>
+  </div>
+</div> 

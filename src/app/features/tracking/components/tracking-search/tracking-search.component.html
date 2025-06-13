@@ -1,0 +1,93 @@
+<div class="tracking-search-container animate-fade-in">
+  <div class="search-header">
+    <h1 class="search-title">Suivez votre colis</h1>
+    <p class="search-subtitle">Entrez votre numéro de suivi pour connaître la position de votre colis en temps réel</p>
+  </div>
+  
+  <div class="search-form-container">
+    <form class="search-form" (submit)="onSearch($event)">
+      <div class="input-group">
+        <div class="input-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <input 
+          type="text" 
+          class="search-input" 
+          [(ngModel)]="trackingNumber" 
+          [ngModelOptions]="{standalone: true}"
+          placeholder="Entrez le numéro de suivi (ex: GLX123456789)" 
+          autocomplete="off"
+          aria-label="Numéro de suivi"
+          required
+        >
+        <button type="submit" class="search-button" [disabled]="!trackingNumber">
+          <span class="button-text">Suivre</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      <div class="search-example">
+        Exemple: <span class="example-number" (click)="useExampleNumber()">GLX123456789</span>
+      </div>
+    </form>
+  </div>
+  
+  <div class="search-features">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="feature-content">
+        <h3 class="feature-title">Suivi en temps réel</h3>
+        <p class="feature-description">Suivez l'évolution de votre colis à chaque étape du transport</p>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-calendar-alt"></i>
+      </div>
+      <div class="feature-content">
+        <h3 class="feature-title">Planifiez votre livraison</h3>
+        <p class="feature-description">Choisissez le jour et l'heure qui vous conviennent</p>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-bell"></i>
+      </div>
+      <div class="feature-content">
+        <h3 class="feature-title">Notifications</h3>
+        <p class="feature-description">Recevez des alertes en temps réel sur l'état de votre colis</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="shipping-partners">
+    <h3 class="partners-title">Nos partenaires d'expédition</h3>
+    <div class="partners-logos">
+      <div class="partner-logo">
+        <img src="assets/images/partner-dhl.png" alt="DHL" />
+      </div>
+      <div class="partner-logo">
+        <img src="assets/images/partner-fedex.png" alt="FedEx" />
+      </div>
+      <div class="partner-logo">
+        <img src="assets/images/partner-ups.png" alt="UPS" />
+      </div>
+      <div class="partner-logo">
+        <img src="assets/images/partner-post.png" alt="La Poste" />
+      </div>
+      <div class="partner-logo">
+        <img src="assets/images/partner-aramex.png" alt="Aramex" />
+      </div>
+    </div>
+  </div>
+  
+  <div class="track-multiple-container">
+    <h3 class="track-multiple-title">
+      <i class="fas fa-boxes"></i> Suivre plusieurs colis
+    </h3>
+    <p class="track-multiple-description">
+      Besoin de suivre plusieurs colis à la fois? <a href="/multi-tracking" class="track-multiple-link">Essayez notre outil de suivi multiple</a>
+    </p>
+  </div>
+</div> 

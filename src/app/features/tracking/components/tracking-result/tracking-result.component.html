@@ -1,0 +1,421 @@
+<!-- ===== BREADCRUMB ===== -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+    <div class="container">
+        <ol class="breadcrumb__list">
+            <li class="breadcrumb__item">
+                <a routerLink="/" class="breadcrumb__link">Home</a>
+            </li>
+            <li class="breadcrumb__item">
+                <span class="breadcrumb__separator" aria-hidden="true">/</span>
+                <a routerLink="/tracking" class="breadcrumb__link">Tracking</a>
+            </li>
+            <li class="breadcrumb__item">
+                <span class="breadcrumb__separator" aria-hidden="true">/</span>
+                <span class="breadcrumb__current" aria-current="page">{{ trackingNumber }}</span>
+            </li>
+        </ol>
+    </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main" role="main">
+    <div class="container">
+        
+        <!-- Loading State -->
+        <div class="tracking-container animate-fade-in">
+            <div class="loading-container" *ngIf="loading">
+                <i class="fas fa-shipping-fast fa-spin loading-spinner"></i>
+                <div class="loading-text">Récupération des informations de suivi...</div>
+            </div>
+            
+            <!-- Error State -->
+            <div class="error-container" *ngIf="error">
+                <i class="fas fa-exclamation-triangle error-icon"></i>
+                <div class="error-title">Impossible de trouver votre colis</div>
+                <div class="error-message">{{ errorMessage || "Veuillez vérifier votre numéro de suivi et réessayer." }}</div>
+                <button class="btn btn-primary" (click)="retry()">
+                    <i class="fas fa-redo-alt"></i> Réessayer
+                </button>
+            </div>
+            
+            <!-- Tracking Content (only shown when data is loaded and no errors) -->
+            <ng-container *ngIf="!loading && !error && trackingData">
+                <!-- ===== TRACKING HEADER ===== -->
+                <div class="tracking-header">
+                    <div class="tracking-header__top">
+                        <div class="tracking-number-section">
+                            <div class="tracking-number-label">Numéro de suivi</div>
+                            <div class="tracking-number-value">{{ trackingData.trackingNumber }}</div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="tracking-actions">
+                            <button class="action-btn" (click)="copyTrackingLink()">
+                                <i class="fas fa-link"></i> Copier le lien
+                            </button>
+                            <button class="action-btn" (click)="printTracking()">
+                                <i class="fas fa-print"></i> Imprimer
+                            </button>
+                            <button class="action-btn" (click)="toggleShareDropdown()">
+                                <i class="fas fa-share-alt"></i> Partager
+                            </button>
+                            <div class="action-dropdown-content" [class.show]="showShareDropdown">
+                                <button class="dropdown-item" (click)="shareViaEmail()">
+                                    <i class="fas fa-envelope"></i> Email
+                                </button>
+                                <button class="dropdown-item" (click)="shareViaSMS()">
+                                    <i class="fas fa-sms"></i> SMS
+                                </button>
+                                <button class="dropdown-item" (click)="shareViaWhatsapp()">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== DELIVERY STATUS ===== -->
+                    <div class="delivery-status">
+                        <div class="status-main">
+                            <div class="status-badge" [ngClass]="getStatusClass()">
+                                <i [class]="getStatusIcon()"></i>
+                                {{ trackingData.status }}
+                            </div>
+                            <div class="status-message">{{ getStatusMessage() }}</div>
+                            <div class="status-details">{{ trackingData.statusDetail }}</div>
+                        </div>
+                        
+                        <div class="delivery-estimate">
+                            <div class="delivery-estimate-label">Livraison estimée</div>
+                            <div class="delivery-estimate-date">{{ trackingData.estimatedDelivery.date }}</div>
+                            <div class="delivery-estimate-time">{{ trackingData.estimatedDelivery.timeframe }}</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== PROGRESS BAR ===== -->
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-line">
+                                <div class="progress-line-fill" [style.width.%]="getProgressPercentage()"></div>
+                            </div>
+                            
+                            <div class="progress-step" [ngClass]="{'completed': isStepCompleted('shipped')}">
+                                <div class="progress-step-icon">
+                                    <i *ngIf="!isStepCompleted('shipped')" class="fas fa-box"></i>
+                                </div>
+                                <div class="progress-step-label">Expédié</div>
+                            </div>
+                            <div class="progress-step" [ngClass]="{'completed': isStepCompleted('inTransit'), 'active': isStepActive('inTransit')}">
+                                <div class="progress-step-icon">
+                                    <i *ngIf="!isStepCompleted('inTransit') && !isStepActive('inTransit')" class="fas fa-truck"></i>
+                                </div>
+                                <div class="progress-step-label">En transit</div>
+                            </div>
+                            <div class="progress-step" [ngClass]="{'completed': isStepCompleted('outForDelivery'), 'active': isStepActive('outForDelivery')}">
+                                <div class="progress-step-icon">
+                                    <i *ngIf="!isStepCompleted('outForDelivery') && !isStepActive('outForDelivery')" class="fas fa-truck-loading"></i>
+                                </div>
+                                <div class="progress-step-label">En cours de livraison</div>
+                            </div>
+                            <div class="progress-step" [ngClass]="{'completed': isStepCompleted('delivered'), 'active': isStepActive('delivered'), 'pending': !isStepCompleted('delivered') && !isStepActive('delivered')}">
+                                <div class="progress-step-icon">
+                                    <i *ngIf="!isStepCompleted('delivered') && !isStepActive('delivered')" class="fas fa-home"></i>
+                                </div>
+                                <div class="progress-step-label">Livré</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== MAIN CONTENT GRID ===== -->
+                <div class="content-grid">
+                    
+                    <!-- ===== LEFT COLUMN ===== -->
+                    <div class="left-column">
+                        <!-- ===== SHIPMENT DETAILS ===== -->
+                        <div class="shipment-details">
+                            <h2 class="section-title"><i class="fas fa-info-circle"></i> Détails de l'expédition</h2>
+                            
+                            <div class="details-grid">
+                                <div class="detail-group">
+                                    <div class="detail-label">Expéditeur</div>
+                                    <div class="detail-value">{{ trackingData.sender.name }}</div>
+                                    <div class="detail-sub">{{ trackingData.sender.location }}</div>
+                                </div>
+                                
+                                <div class="detail-group">
+                                    <div class="detail-label">Destinataire</div>
+                                    <div class="detail-value">{{ trackingData.recipient.name }}</div>
+                                    <div class="detail-sub">{{ trackingData.recipient.location }}</div>
+                                </div>
+                            </div>
+
+                            <div class="details-grid">
+                                <div class="detail-group">
+                                    <div class="detail-label">Date d'expédition</div>
+                                    <div class="detail-value">{{ trackingData.shippingDate }}</div>
+                                </div>
+                                
+                                <div class="detail-group">
+                                    <div class="detail-label">Service</div>
+                                    <div class="detail-value">{{ trackingData.service }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== PACKAGE INFO ===== -->
+                        <div class="package-info">
+                            <h2 class="section-title"><i class="fas fa-box"></i> Informations du colis</h2>
+                            
+                            <div class="package-grid">
+                                <div class="package-item">
+                                    <div class="package-icon">
+                                        <i class="fas fa-weight-hanging"></i>
+                                    </div>
+                                    <div class="package-text">
+                                        <div class="package-label">Poids</div>
+                                        <div class="package-value">{{ trackingData.packageInfo.weight }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="package-item">
+                                    <div class="package-icon">
+                                        <i class="fas fa-ruler-combined"></i>
+                                    </div>
+                                    <div class="package-text">
+                                        <div class="package-label">Dimensions</div>
+                                        <div class="package-value">{{ trackingData.packageInfo.dimensions }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="package-item">
+                                    <div class="package-icon">
+                                        <i class="fas fa-box-open"></i>
+                                    </div>
+                                    <div class="package-text">
+                                        <div class="package-label">Articles</div>
+                                        <div class="package-value">{{ trackingData.packageInfo.items }} article(s)</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="package-item">
+                                    <div class="package-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <div class="package-text">
+                                        <div class="package-label">Référence</div>
+                                        <div class="package-value">{{ trackingData.packageInfo.reference || 'N/A' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== RIGHT COLUMN ===== -->
+                    <div class="right-column">
+                        <!-- ===== MAP SECTION ===== -->
+                        <div class="map-section">
+                            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Localisation du colis</h2>
+                            <div id="tracking-map" class="tracking-map"></div>
+                        </div>
+
+                        <!-- ===== DELIVERY OPTIONS ===== -->
+                        <div class="delivery-options">
+                            <h2 class="section-title"><i class="fas fa-cog"></i> Options de livraison</h2>
+                            
+                            <div class="options-grid">
+                                <button class="option-btn" (click)="openDeliveryScheduleModal()">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Programmer la livraison</span>
+                                </button>
+                                
+                                <button class="option-btn" (click)="openAddressChangeModal()">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    <span>Modifier l'adresse</span>
+                                </button>
+                                
+                                <button class="option-btn" (click)="openHoldLocationModal()">
+                                    <i class="fas fa-store-alt"></i>
+                                    <span>Livrer en point relais</span>
+                                </button>
+                                
+                                <button class="option-btn" (click)="openInstructionsModal()">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <span>Instructions de livraison</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ===== TRACKING HISTORY ===== -->
+                        <div class="tracking-history">
+                            <h2 class="section-title"><i class="fas fa-history"></i> Historique de suivi</h2>
+                            
+                            <div class="history-timeline">
+                                <div class="history-item" *ngFor="let event of trackingData.history">
+                                    <div class="history-icon" [ngClass]="getEventStatusClass(event)">
+                                        <i [class]="getEventStatusIcon(event)"></i>
+                                    </div>
+                                    <div class="history-content">
+                                        <div class="history-status">{{ event.status }}</div>
+                                        <div class="history-location">{{ event.location }}</div>
+                                        <div class="history-datetime">
+                                            <span><i class="far fa-calendar-alt"></i> {{ event.date }}</span>
+                                            <span><i class="far fa-clock"></i> {{ event.time }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</main>
+
+<!-- ===== MODALS ===== -->
+<!-- Schedule Delivery Modal -->
+<div class="modal" [class.show]="showScheduleModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Programmer la livraison</h3>
+            <button class="close-btn" (click)="closeAllModals()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form (ngSubmit)="saveScheduleDelivery()">
+                <div class="form-group">
+                    <label>Date de livraison souhaitée</label>
+                    <input type="date" [(ngModel)]="scheduleForm.date" name="date" [min]="getMinDeliveryDate()">
+                </div>
+                <div class="form-group">
+                    <label>Créneau horaire préféré</label>
+                    <select [(ngModel)]="scheduleForm.timeWindow" name="timeWindow">
+                        <option value="morning">Matin (8h-12h)</option>
+                        <option value="afternoon">Après-midi (14h-18h)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Instructions spéciales</label>
+                    <textarea [(ngModel)]="scheduleForm.notes" name="notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Address Change Modal -->
+<div class="modal" [class.show]="showAddressModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Modifier l'adresse de livraison</h3>
+            <button class="close-btn" (click)="closeAllModals()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form (ngSubmit)="saveAddressChange()">
+                <div class="form-group">
+                    <label>Nom du destinataire</label>
+                    <input type="text" [(ngModel)]="addressForm.name" name="name">
+                </div>
+                <div class="form-group">
+                    <label>Adresse ligne 1</label>
+                    <input type="text" [(ngModel)]="addressForm.line1" name="line1">
+                </div>
+                <div class="form-group">
+                    <label>Adresse ligne 2 (optionnel)</label>
+                    <input type="text" [(ngModel)]="addressForm.line2" name="line2">
+                </div>
+                <div class="form-group">
+                    <label>Ville</label>
+                    <input type="text" [(ngModel)]="addressForm.city" name="city">
+                </div>
+                <div class="form-group">
+                    <label>Code postal</label>
+                    <input type="text" [(ngModel)]="addressForm.postalCode" name="postalCode">
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" [(ngModel)]="addressForm.phone" name="phone">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Hold Location Modal -->
+<div class="modal" [class.show]="showLocationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Choisir un point relais</h3>
+            <button class="close-btn" (click)="closeAllModals()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="search-box">
+                <input type="text" [(ngModel)]="locationForm.search" placeholder="Rechercher par ville ou code postal" (input)="searchLocations()">
+            </div>
+            <div class="locations-list">
+                <div class="location-item" *ngFor="let location of locationResults" (click)="selectLocation(location.id)" [class.selected]="location.id === locationForm.selectedId">
+                    <div class="location-name">{{ location.name }}</div>
+                    <div class="location-address">{{ location.address }}</div>
+                    <div class="location-hours">{{ location.hours }}</div>
+                    <div class="location-distance">{{ location.distance }} km</div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="saveHoldLocation()" [disabled]="!locationForm.selectedId">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delivery Instructions Modal -->
+<div class="modal" [class.show]="showInstructionsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Instructions de livraison</h3>
+            <button class="close-btn" (click)="closeAllModals()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form (ngSubmit)="saveDeliveryInstructions()">
+                <div class="form-group">
+                    <label>Type d'instruction</label>
+                    <select [(ngModel)]="instructionsForm.type" name="type">
+                        <option value="leave-at-door">Laisser à la porte</option>
+                        <option value="signature">Signature requise</option>
+                        <option value="neighbor">Livrer chez un voisin</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Code d'accès (si nécessaire)</label>
+                    <input type="text" [(ngModel)]="instructionsForm.accessCode" name="accessCode">
+                </div>
+                <div class="form-group">
+                    <label>Instructions détaillées</label>
+                    <textarea [(ngModel)]="instructionsForm.details" name="details" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Success notification -->
+<div class="notification" [class.show]="showNotification">
+    <i class="fas fa-check-circle notification-icon"></i>
+    <div class="notification-content">
+        <div class="notification-title">{{ notificationTitle }}</div>
+        <div class="notification-message">{{ notificationMessage }}</div>
+    </div>
+    <button class="notification-close" (click)="closeNotification()">×</button>
+</div>

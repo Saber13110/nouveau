@@ -1,0 +1,81 @@
+<div class="faqs-container">
+  <!-- Search and Filter Section -->
+  <div class="search-filter">
+    <div class="search-box">
+      <i class="fas fa-search" aria-hidden="true"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        placeholder="Search FAQs..."
+        aria-label="Search frequently asked questions"
+      >
+    </div>
+    <div class="category-filter">
+      <button 
+        *ngFor="let category of categories"
+        class="category-btn"
+        [class.active]="selectedCategory === category.id"
+        (click)="selectCategory(category.id)"
+        [attr.aria-pressed]="selectedCategory === category.id"
+      >
+        {{ category.name }}
+      </button>
+    </div>
+  </div>
+
+  <!-- FAQ List -->
+  <div class="faq-list" role="list">
+    <div 
+      *ngFor="let faq of filterFAQs()" 
+      class="faq-item"
+      [class.open]="faq.isOpen"
+      role="listitem"
+    >
+      <button 
+        class="faq-question" 
+        (click)="toggleFAQ(faq)"
+        [attr.aria-expanded]="faq.isOpen"
+        [attr.aria-controls]="'faq-answer-' + faq.question"
+      >
+        <span class="question-text">{{ faq.question }}</span>
+        <span class="category-tag" [attr.data-category]="faq.category">
+          {{ faq.category }}
+        </span>
+        <i class="fas" [class.fa-chevron-down]="!faq.isOpen" [class.fa-chevron-up]="faq.isOpen" aria-hidden="true"></i>
+      </button>
+      <div 
+        class="faq-answer" 
+        [id]="'faq-answer-' + faq.question"
+        role="region"
+        [attr.aria-hidden]="!faq.isOpen"
+      >
+        {{ faq.answer }}
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results Message -->
+  <div *ngIf="filterFAQs().length === 0" class="no-results">
+    <i class="fas fa-search" aria-hidden="true"></i>
+    <p>No FAQs found matching your search criteria.</p>
+    <button class="reset-btn" (click)="searchQuery = ''; selectedCategory = 'all'">
+      Reset Filters
+    </button>
+  </div>
+
+  <!-- Help Section -->
+  <div class="help-section">
+    <h3>Still need help?</h3>
+    <p>Can't find what you're looking for? Our support team is here to help.</p>
+    <div class="help-buttons">
+      <a routerLink="/help/contact-us" class="help-btn primary">
+        <i class="fas fa-headset" aria-hidden="true"></i>
+        Contact Support
+      </a>
+      <a href="mailto:support@globex.com" class="help-btn secondary">
+        <i class="fas fa-envelope" aria-hidden="true"></i>
+        Email Us
+      </a>
+    </div>
+  </div>
+</div> 

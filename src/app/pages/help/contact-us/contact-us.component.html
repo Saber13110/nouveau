@@ -1,0 +1,166 @@
+<div class="contact-container">
+  <!-- Contact Options -->
+  <div class="contact-options">
+    <div 
+      *ngFor="let option of contactOptions"
+      class="contact-option"
+      [class.active]="selectedOption === option.id"
+      (click)="option.isForm ? selectOption(option.id) : null"
+    >
+      <a 
+        *ngIf="option.link && !option.isForm" 
+        [href]="option.link"
+        class="option-content"
+      >
+        <div class="option-icon">
+          <i class="fas {{ option.icon }}" aria-hidden="true"></i>
+        </div>
+        <div class="option-info">
+          <h3>{{ option.title }}</h3>
+          <p>{{ option.description }}</p>
+        </div>
+        <i class="fas fa-chevron-right option-arrow" aria-hidden="true"></i>
+      </a>
+      <button 
+        *ngIf="option.isForm"
+        type="button"
+        class="option-content"
+        (click)="selectOption(option.id)"
+      >
+        <div class="option-icon">
+          <i class="fas {{ option.icon }}" aria-hidden="true"></i>
+        </div>
+        <div class="option-info">
+          <h3>{{ option.title }}</h3>
+          <p>{{ option.description }}</p>
+        </div>
+        <i class="fas fa-chevron-right option-arrow" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Contact Form -->
+  <div class="contact-form" *ngIf="selectedOption === 'email'">
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+      <div class="form-header">
+        <h2>Send us a message</h2>
+        <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Name *</label>
+        <input 
+          type="text" 
+          id="name" 
+          formControlName="name"
+          [class.error]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched"
+        >
+        <span class="error-message" *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">
+          {{ getErrorMessage('name') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          [class.error]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched"
+        >
+        <span class="error-message" *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject *</label>
+        <input 
+          type="text" 
+          id="subject" 
+          formControlName="subject"
+          [class.error]="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched"
+        >
+        <span class="error-message" *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched">
+          {{ getErrorMessage('subject') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="trackingNumber">Tracking Number (Optional)</label>
+        <input 
+          type="text" 
+          id="trackingNumber" 
+          formControlName="trackingNumber"
+          placeholder="e.g., GLX123456789"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message *</label>
+        <textarea 
+          id="message" 
+          formControlName="message"
+          rows="5"
+          [class.error]="contactForm.get('message')?.invalid && contactForm.get('message')?.touched"
+        ></textarea>
+        <span class="error-message" *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched">
+          {{ getErrorMessage('message') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="attachments">Attachments</label>
+        <div class="file-upload">
+          <input 
+            type="file" 
+            id="attachments" 
+            multiple
+            (change)="onFileSelected($event)"
+            accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+          >
+          <div class="upload-placeholder">
+            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+            <span>Drop files here or click to upload</span>
+            <small>Max file size: 5MB | Supported formats: JPG, PNG, PDF, DOC</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="selectedOption = null">
+          Cancel
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="contactForm.invalid">
+          Send Message
+          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Social Media Links -->
+  <div class="social-links" *ngIf="selectedOption === 'social'">
+    <h2>Connect with us</h2>
+    <p>Follow us on social media for updates and announcements</p>
+    
+    <div class="social-grid">
+      <a href="#" class="social-item">
+        <i class="fab fa-facebook" aria-hidden="true"></i>
+        <span>Facebook</span>
+      </a>
+      <a href="#" class="social-item">
+        <i class="fab fa-twitter" aria-hidden="true"></i>
+        <span>Twitter</span>
+      </a>
+      <a href="#" class="social-item">
+        <i class="fab fa-linkedin" aria-hidden="true"></i>
+        <span>LinkedIn</span>
+      </a>
+      <a href="#" class="social-item">
+        <i class="fab fa-instagram" aria-hidden="true"></i>
+        <span>Instagram</span>
+      </a>
+    </div>
+  </div>
+</div> 

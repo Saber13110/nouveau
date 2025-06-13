@@ -1,0 +1,299 @@
+<!-- ===== BREADCRUMB ===== -->
+<section class="breadcrumb">
+  <div class="container">
+    <nav class="breadcrumb__nav">
+      <a routerLink="/" class="breadcrumb__link">Home</a>
+      <span><i class="fas fa-chevron-right"></i></span>
+      <span class="breadcrumb__current">Tracking</span>
+    </nav>
+  </div>
+</section>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-content">
+  <div class="container">
+    <h1 class="main-title">Track the way you want</h1>
+    <p class="main-subtitle">
+      Need the status of your shipment or proof of delivery? Enter your tracking number or reference number below.
+    </p>
+
+    <!-- ===== TRACKING TABS ===== -->
+    <div class="tracking-tabs">
+      <button 
+        class="tracking-tab" 
+        [class.active]="activeTab === 'tracking-number'"
+        (click)="showTab('tracking-number')">
+        Tracking number
+      </button>
+      <button 
+        class="tracking-tab" 
+        [class.active]="activeTab === 'track-reference'"
+        (click)="showTab('track-reference')">
+        Track by reference
+      </button>
+      <button 
+        class="tracking-tab" 
+        [class.active]="activeTab === 'track-tcn'"
+        (click)="showTab('track-tcn')">
+        Track by TCN
+      </button>
+      <button 
+        class="tracking-tab" 
+        [class.active]="activeTab === 'proof-delivery'"
+        (click)="showTab('proof-delivery')">
+        Obtain proof of delivery
+      </button>
+    </div>
+
+    <!-- ===== TRACKING CONTENT ===== -->
+    <div class="tracking-content">
+      
+      <!-- Track by Number -->
+      <div class="tracking-panel" [class.active]="activeTab === 'tracking-number'">
+        <p class="tracking-description">
+          Enter up to 30 of your Globex tracking, door tag, or Globex Office order numbers (one per line).
+        </p>
+        
+        <form class="tracking-form" (ngSubmit)="trackPackage($event)">
+          <div class="form-group">
+            <label class="form-label" for="trackingInput">Tracking number*</label>
+            <input 
+              type="text" 
+              id="trackingInput"
+              class="form-input" 
+              placeholder="Enter tracking number"
+              [(ngModel)]="trackingNumber"
+              name="trackingNumber"
+              (input)="validateInput('tracking', trackingNumber)"
+            >
+          </div>
+
+          <!-- ===== SCAN BARCODE SECTION ===== -->
+          <div class="scan-section">
+            <div class="scan-icon">
+              <i class="fas fa-qrcode"></i>
+            </div>
+            <h3 class="scan-title">Scan Barcode</h3>
+            <p class="scan-description">
+              Use your mobile device to scan the barcode on your shipping label
+            </p>
+            <button 
+              type="button" 
+              class="scan-btn" 
+              (click)="startBarcodeScanner()"
+              [disabled]="isLoading">
+              <i class="fas fa-camera"></i> Scan Barcode
+            </button>
+          </div>
+
+          <a href="#" class="need-help">NEED HELP?</a>
+          
+          <div style="text-align: center;">
+            <button 
+              type="submit" 
+              class="track-btn" 
+              [class.enabled]="isTrackingValid"
+              [disabled]="!isTrackingValid || isLoading">
+              <span *ngIf="!isLoading">TRACK</span>
+              <span *ngIf="isLoading">TRACKING...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Track by Reference -->
+      <div class="tracking-panel" [class.active]="activeTab === 'track-reference'">
+        <p class="tracking-description">
+          Enter your reference number or purchase order numbers.
+        </p>
+        
+        <form class="tracking-form" (ngSubmit)="trackByReference($event)">
+          <div class="form-group">
+            <label class="form-label" for="referenceInput">Reference number*</label>
+            <input 
+              type="text" 
+              id="referenceInput"
+              class="form-input" 
+              placeholder="Enter reference number"
+              [(ngModel)]="referenceNumber"
+              name="referenceNumber"
+              (input)="validateInput('reference', referenceNumber)"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="countrySelect">Destination country/territory*</label>
+            <select 
+              id="countrySelect" 
+              class="form-select"
+              [(ngModel)]="selectedCountry"
+              name="selectedCountry"
+              (change)="validateInput('reference', referenceNumber)">
+              <option value="">Select country</option>
+              <option value="FR">France</option>
+              <option value="DE">Germany</option>
+              <option value="ES">Spain</option>
+              <option value="IT">Italy</option>
+              <option value="UK">United Kingdom</option>
+              <option value="US">United States</option>
+            </select>
+          </div>
+
+          <a href="#" class="need-help">NEED HELP?</a>
+          
+          <div style="text-align: center;">
+            <button 
+              type="submit" 
+              class="track-btn" 
+              [class.enabled]="isReferenceValid"
+              [disabled]="!isReferenceValid || isLoading">
+              <span *ngIf="!isLoading">TRACK</span>
+              <span *ngIf="isLoading">TRACKING...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Track by TCN -->
+      <div class="tracking-panel" [class.active]="activeTab === 'track-tcn'">
+        <p class="tracking-description">
+          Enter your Transportation Control Number (TCN) for government orders.<br>
+          Do not use any spaces or the letters "TCN" preceding the number.
+        </p>
+        
+        <form class="tracking-form" (ngSubmit)="trackByTCN($event)">
+          <div class="form-group">
+            <label class="form-label" for="tcnInput">Enter TCN or tracking number*</label>
+            <input 
+              type="text" 
+              id="tcnInput"
+              class="form-input" 
+              placeholder="Enter TCN"
+              [(ngModel)]="tcnNumber"
+              name="tcnNumber"
+              (input)="validateInput('tcn', tcnNumber)"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="shipDate">Ship date*</label>
+            <div style="position: relative;">
+              <input 
+                type="date" 
+                id="shipDate"
+                class="form-input"
+                [(ngModel)]="shipDate"
+                name="shipDate"
+                (change)="validateInput('tcn', tcnNumber)"
+              >
+              <i class="fas fa-calendar" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #4d148c; pointer-events: none;"></i>
+            </div>
+            <div class="form-help">Please enter the ship date if the package was shipped more than 14 days ago.</div>
+          </div>
+
+          <a href="#" class="need-help">NEED HELP?</a>
+          
+          <div style="text-align: center;">
+            <button 
+              type="submit" 
+              class="track-btn" 
+              [class.enabled]="isTCNValid"
+              [disabled]="!isTCNValid || isLoading">
+              <span *ngIf="!isLoading">TRACK</span>
+              <span *ngIf="isLoading">TRACKING...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Proof of Delivery -->
+      <div class="tracking-panel" [class.active]="activeTab === 'proof-delivery'">
+        <form class="tracking-form" (ngSubmit)="getProofOfDelivery($event)">
+          <div class="form-group">
+            <label class="form-label" for="proofInput">Tracking ID*</label>
+            <input 
+              type="text" 
+              id="proofInput"
+              class="form-input" 
+              placeholder="Enter your tracking ID"
+              [(ngModel)]="proofNumber"
+              name="proofNumber"
+              (input)="validateInput('proof', proofNumber)"
+            >
+          </div>
+          
+          <div style="text-align: center;">
+            <button 
+              type="submit" 
+              class="track-btn enabled" 
+              [class.enabled]="isProofValid"
+              [disabled]="!isProofValid || isLoading">
+              <span *ngIf="!isLoading">DOWNLOAD</span>
+              <span *ngIf="isLoading">DOWNLOADING...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ===== TRACKING OPTIONS SECTION ===== -->
+<section class="tracking-options">
+  <div class="container">
+    <h2 class="tracking-options__title">Tracking Options</h2>
+    
+    <div class="tracking-options__content">
+      <div class="tracking-options__section">
+        <h3>Globex Tracking</h3>
+        <p class="tracking-options__description">
+          Globex Tracking, the tool at the top of your page gives you shipment updates in just one click. A tool built for speed, simplicity and convenience. Save your shipments straight to our homepage, so you don't have to log in to find out where your packages are.
+        </p>
+      </div>
+      
+      <div class="tracking-options__section">
+        <h3>Key Benefits</h3>
+        <ul class="benefits-list">
+          <li>Track in near real time without logging in</li>
+          <li>Get an update in one click on the homepage</li>
+          <li>Save your shipments for quick updates in near real time</li>
+          <li>See all your shipments on one clear interface</li>
+          <li>Create nicknames for our simplest search experience</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MOBILE TRACKING SECTION ===== -->
+<section class="mobile-tracking">
+  <div class="container">
+    <div class="mobile-tracking__content">
+      <div class="mobile-tracking__section">
+        <h3>Globex Mobile Tracking</h3>
+        <p class="mobile-tracking__description">
+          Globex Tracking for mobile is our most convenient tracking tool, giving you updates while you're on the go so you can stay on top of your shipments 24/7 and from any location. It offers all the power of Globex Tracking in the palm of your hand.
+        </p>
+      </div>
+      
+      <div class="mobile-tracking__section">
+        <h3>Key Benefits</h3>
+        <ul class="benefits-list">
+          <li>Track from anywhere at any time</li>
+          <li>Follow your package in just one tap</li>
+          <li>Stay up to date by setting automatic alerts</li>
+          <li>An easy way to track with barcode scanning</li>
+        </ul>
+        
+        <div class="app-downloads">
+          <a href="#" class="app-download">
+            <img src="assets/images/app-store.png" alt="Download on App Store">
+          </a>
+          <a href="#" class="app-download">
+            <img src="assets/images/google-play.png" alt="Get it on Google Play">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

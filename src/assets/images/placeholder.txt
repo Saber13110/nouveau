@@ -1,0 +1,3 @@
+Place your app store and google play store images here:
+- app-store.png
+- google-play.png 
