@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, delay, map } from 'rxjs/operators';
 import { TrackingData } from '../models/tracking-data.model';
+import { environment } from '../../../../environments/environment';
 
 export interface HistoryItem {
   status: string;
@@ -24,28 +25,84 @@ export interface PackageInfo {
   providedIn: 'root'
 })
 export class TrackingService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
+  private transformFedExResponse(resp: any, trackingNumber: string): TrackingData {
+    const result = resp?.output?.completeTrackResults?.[0]?.trackResults?.[0] || {};
+    const latest = result.latestStatusDetail || {};
+    return {
+      id: '0',
+      trackingNumber,
+      status: latest.code || 'UNKNOWN',
+      statusDetails: latest.description || '',
+      statusDetail: latest.description || '',
+      estimatedDeliveryDate: result.dateAndTimes?.[0]?.dateTime || '',
+      estimatedDelivery: {
+        date: '',
+        timeframe: ''
+      },
+      shipDate: result.shipDate || '',
+      shippingDate: result.shipDate || '',
+      service: result.serviceDetail?.description || '',
+      sender: { name: '', address: '', location: '' },
+      recipient: { name: '', address: '', location: '' },
+      currentLocation: { address: '' },
+      packageInfo: {
+        weight: '',
+        dimensions: '',
+        pieces: '',
+        insurance: '',
+        items: 0,
+        reference: ''
+      },
+      history: []
+    } as TrackingData;
+  }
+
+  /**
+   * Query the backend to track a shipment by number.
+   */
+  trackByNumber(trackingNumber: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tracking/number`, { trackingNumber });
+  }
+
+  /**
+   * Track a shipment by reference number and destination country.
+   */
+  trackByReference(reference: string, country: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tracking/reference`, { reference, country });
+  }
+
+  /**
+   * Track a shipment using a Transportation Control Number.
+   */
+  trackByTCN(tcn: string, shipDate: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tracking/tcn`, { tcn, shipDate });
+  }
+
+  /**
+   * Track a shipment by scanning a barcode value.
+   */
+  trackByBarcode(barcode: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tracking/barcode`, { barcode });
+  }
+
   getTrackingData(trackingNumber: string): Observable<TrackingData> {
-    // Validation du numéro de suivi
     if (!trackingNumber || !trackingNumber.trim()) {
       return throwError(() => new Error('Veuillez fournir un numéro de suivi valide'));
     }
 
-    // Si le numéro de suivi est 'ERROR', on retourne une erreur
-    if (trackingNumber.toUpperCase() === 'ERROR') {
-      return throwError(() => new Error('Numéro de suivi invalide ou introuvable'));
-    }
-
-    // Données mockées pour démonstration
-    const mockData: TrackingData = {
-      id: '123456',
-      trackingNumber: trackingNumber,
-      status: 'IN-TRANSIT',
-      statusDetails: 'Votre colis est en cours d\'acheminement vers Casablanca, Maroc',
-      statusDetail: 'Votre colis est en cours d\'acheminement vers Casablanca, Maroc',
+    return this.trackByNumber(trackingNumber).pipe(
+      map(resp => this.transformFedExResponse(resp, trackingNumber)),
+      catchError(() => {
+        const mockData: TrackingData = {
+          id: '123456',
+          trackingNumber: trackingNumber,
+          status: 'IN-TRANSIT',
+          statusDetails: 'Votre colis est en cours d\'acheminement vers Casablanca, Maroc',
+          statusDetail: 'Votre colis est en cours d\'acheminement vers Casablanca, Maroc',
       estimatedDeliveryDate: '2023-06-15',
       estimatedDelivery: {
         date: 'Mercredi, 15 Juin 2023',
@@ -120,14 +177,9 @@ export class TrackingService {
           isCurrent: true
         }
       ]
-    };
+        };
 
-    // Simulation d'un délai d'API avec gestion d'erreur
-    return of(mockData).pipe(
-      delay(1500),
-      catchError(error => {
-        console.error('Error fetching tracking data:', error);
-        return throwError(() => new Error('Une erreur est survenue lors de la récupération des données de suivi'));
+        return of(mockData).pipe(delay(1500));
       })
     );
   }
