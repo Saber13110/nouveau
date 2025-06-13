@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
@@ -74,3 +74,10 @@ def track_tcn(payload: schemas.TCNRequest):
 def track_barcode(payload: schemas.BarcodeRequest):
     """Track using a barcode scan."""
     return fedex.track_by_barcode(payload.barcode)
+
+
+@router.get('/proof/{tracking_number}')
+def proof_of_delivery(tracking_number: str):
+    """Retrieve proof of delivery PDF for the given tracking number."""
+    pdf_bytes = fedex.get_proof_of_delivery(tracking_number)
+    return Response(content=pdf_bytes, media_type='application/pdf')

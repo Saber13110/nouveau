@@ -40,3 +40,11 @@ uvicorn app.main:app --reload
 ```
 
 The API will be available at `http://localhost:8000/api`.
+
+### Endpoints
+
+- `POST /api/tracking/number` – track by tracking number
+- `POST /api/tracking/reference` – track by reference
+- `POST /api/tracking/tcn` – track by TCN
+- `POST /api/tracking/barcode` – track by barcode
+- `GET /api/tracking/proof/{number}` – download proof of delivery PDF

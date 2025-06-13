@@ -87,3 +87,22 @@ class FedExClient:
     def track_by_barcode(self, barcode: str) -> Dict[str, Any]:
         # For simplicity barcode is treated as tracking number
         return self.track_by_number(barcode)
+
+    def get_proof_of_delivery(self, tracking_number: str) -> bytes:
+        """Retrieve proof of delivery document as PDF."""
+        token = self._get_token()
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "trackingNumberInfo": {
+                "trackingNumber": tracking_number,
+            },
+            "includeHTMLDetail": False,
+            "documentType": "PDF",
+        }
+        url = f"{self.base_url}/track/v1/associatedshipments/documents"
+        resp = requests.post(url, json=payload, headers=headers)
+        resp.raise_for_status()
+        return resp.content

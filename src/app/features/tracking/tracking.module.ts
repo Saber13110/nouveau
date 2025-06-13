@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { TrackingRoutingModule } from './tracking-routing.module';
 
@@ -9,7 +10,8 @@ import { TrackingRoutingModule } from './tracking-routing.module';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TrackingRoutingModule
+    TrackingRoutingModule,
+    HttpClientModule
   ]
 })
-export class TrackingModule { } 
+export class TrackingModule { }

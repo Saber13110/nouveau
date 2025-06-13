@@ -89,6 +89,15 @@ export class TrackingService {
     return this.http.post<any>(`${this.apiUrl}/tracking/barcode`, { barcode });
   }
 
+  /**
+   * Retrieve proof of delivery PDF.
+   */
+  getProofOfDelivery(trackingNumber: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/tracking/proof/${trackingNumber}`, {
+      responseType: 'blob'
+    });
+  }
+
   getTrackingData(trackingNumber: string): Observable<TrackingData> {
     if (!trackingNumber || !trackingNumber.trim()) {
       return throwError(() => new Error('Veuillez fournir un numéro de suivi valide'));
