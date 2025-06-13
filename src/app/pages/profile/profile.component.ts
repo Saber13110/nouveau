@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService, User } from '../../features/auth/services/auth.service';
 
 interface ShipmentActivity {
   trackingNumber: string;
@@ -88,7 +90,11 @@ export class ProfileComponent implements OnInit {
     }
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.profileForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -110,7 +116,31 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.profileForm.patchValue(this.userProfile);
+    const token = this.authService.getToken();
+    if (!token) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    this.authService.validateToken().subscribe({
+      next: (user: User) => {
+        this.userProfile = {
+          ...this.userProfile,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          accountId: String(user.id),
+          memberSince: new Date(user.createdAt),
+          lastUpdate: user.updatedAt ? new Date(user.updatedAt) : this.userProfile.lastUpdate,
+          emailVerified: user.isEmailVerified,
+          twoFactorEnabled: user.isTwoFactorEnabled ?? this.userProfile.twoFactorEnabled
+        };
+        this.profileForm.patchValue(this.userProfile);
+      },
+      error: () => {
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 
   switchTab(tab: 'personal' | 'shipments' | 'preferences' | 'security'): void {
