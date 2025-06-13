@@ -38,3 +38,21 @@ class TrackingRead(TrackingBase):
 
     class Config:
         orm_mode = True
+
+
+class TrackingNumberRequest(BaseModel):
+    trackingNumber: str
+
+
+class ReferenceRequest(BaseModel):
+    reference: str
+    country: str
+
+
+class TCNRequest(BaseModel):
+    tcn: str
+    shipDate: str
+
+
+class BarcodeRequest(BaseModel):
+    barcode: str
