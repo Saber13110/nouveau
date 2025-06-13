@@ -28,16 +28,22 @@
           <div class="form-field half-width">
             <label for="firstName">Prénom</label>
             <div class="input-group">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 id="firstName"
                 formControlName="firstName"
                 placeholder="Jean"
                 autocomplete="given-name"
-                [class.error]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+                [class.error]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched"
+                [attr.aria-invalid]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched"
+                [attr.aria-describedby]="registerForm.get('firstName')?.hasError('required') && registerForm.get('firstName')?.touched ? 'firstName-required' : null">
               <span class="icon">👤</span>
             </div>
-            <div class="error-message" *ngIf="registerForm.get('firstName')?.hasError('required') && registerForm.get('firstName')?.touched">
+            <div
+              class="error-message"
+              id="firstName-required"
+              *ngIf="registerForm.get('firstName')?.hasError('required') && registerForm.get('firstName')?.touched"
+            >
               Le prénom est requis
             </div>
           </div>
@@ -45,15 +51,21 @@
           <div class="form-field half-width">
             <label for="lastName">Nom</label>
             <div class="input-group">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 id="lastName"
                 formControlName="lastName"
                 placeholder="Dupont"
                 autocomplete="family-name"
-                [class.error]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+                [class.error]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched"
+                [attr.aria-invalid]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched"
+                [attr.aria-describedby]="registerForm.get('lastName')?.hasError('required') && registerForm.get('lastName')?.touched ? 'lastName-required' : null">
             </div>
-            <div class="error-message" *ngIf="registerForm.get('lastName')?.hasError('required') && registerForm.get('lastName')?.touched">
+            <div
+              class="error-message"
+              id="lastName-required"
+              *ngIf="registerForm.get('lastName')?.hasError('required') && registerForm.get('lastName')?.touched"
+            >
               Le nom est requis
             </div>
           </div>
@@ -63,19 +75,35 @@
         <div class="form-field">
           <label for="email">Adresse email</label>
           <div class="input-group">
-            <input 
-              type="email" 
+            <input
+              type="email"
               id="email"
               formControlName="email"
               placeholder="jean.dupont@exemple.com"
               autocomplete="email"
-              [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+              [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+              [attr.aria-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+              [attr.aria-describedby]="
+                registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched
+                  ? 'reg-email-required'
+                  : registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched
+                    ? 'reg-email-format'
+                    : null
+              ">
             <span class="icon">📧</span>
           </div>
-          <div class="error-message" *ngIf="registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched">
+          <div
+            class="error-message"
+            id="reg-email-required"
+            *ngIf="registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched"
+          >
             L'email est requis
           </div>
-          <div class="error-message" *ngIf="registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched">
+          <div
+            class="error-message"
+            id="reg-email-format"
+            *ngIf="registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched"
+          >
             Veuillez entrer un email valide
           </div>
         </div>
@@ -84,13 +112,15 @@
         <div class="form-field">
           <label for="password">Mot de passe</label>
           <div class="input-group">
-            <input 
+            <input
               [type]="hidePassword ? 'password' : 'text'"
               id="password"
               formControlName="password"
               placeholder="Créez un mot de passe sécurisé"
               autocomplete="new-password"
-              [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+              [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+              [attr.aria-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+              [attr.aria-describedby]="registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched ? 'password-required' : null">
             <button 
               type="button"
               class="toggle-password"
@@ -98,7 +128,11 @@
               {{ hidePassword ? '👁️' : '🙈' }}
             </button>
           </div>
-          <div class="error-message" *ngIf="registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched">
+          <div
+            class="error-message"
+            id="password-required"
+            *ngIf="registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched"
+          >
             Le mot de passe est requis
           </div>
         </div>
@@ -107,13 +141,21 @@
         <div class="form-field">
           <label for="confirmPassword">Confirmer le mot de passe</label>
           <div class="input-group">
-            <input 
+            <input
               [type]="hideConfirmPassword ? 'password' : 'text'"
               id="confirmPassword"
               formControlName="confirmPassword"
               placeholder="Confirmez votre mot de passe"
               autocomplete="new-password"
-              [class.error]="(registerForm.get('confirmPassword')?.invalid || registerForm.hasError('passwordMismatch')) && registerForm.get('confirmPassword')?.touched">
+              [class.error]="(registerForm.get('confirmPassword')?.invalid || registerForm.hasError('passwordMismatch')) && registerForm.get('confirmPassword')?.touched"
+              [attr.aria-invalid]="(registerForm.get('confirmPassword')?.invalid || registerForm.hasError('passwordMismatch')) && registerForm.get('confirmPassword')?.touched"
+              [attr.aria-describedby]="
+                registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched
+                  ? 'confirm-required'
+                  : registerForm.hasError('passwordMismatch') && !registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched
+                    ? 'confirm-mismatch'
+                    : null
+              ">
             <button 
               type="button"
               class="toggle-password"
@@ -121,10 +163,18 @@
               {{ hideConfirmPassword ? '👁️' : '🙈' }}
             </button>
           </div>
-          <div class="error-message" *ngIf="registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched">
+          <div
+            class="error-message"
+            id="confirm-required"
+            *ngIf="registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched"
+          >
             Veuillez confirmer votre mot de passe
           </div>
-          <div class="error-message" *ngIf="registerForm.hasError('passwordMismatch') && !registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched">
+          <div
+            class="error-message"
+            id="confirm-mismatch"
+            *ngIf="registerForm.hasError('passwordMismatch') && !registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched"
+          >
             Les mots de passe ne correspondent pas
           </div>
         </div>
@@ -154,14 +204,24 @@
         <!-- Terms Checkbox -->
         <div class="terms-section">
           <label class="checkbox-label">
-            <input type="checkbox" formControlName="acceptTerms" required>
-            <span>J'accepte les 
-              <a href="/terms" target="_blank">Conditions d'utilisation</a> 
-              et la 
+            <input
+              type="checkbox"
+              formControlName="acceptTerms"
+              required
+              [attr.aria-invalid]="registerForm.get('acceptTerms')?.invalid && registerForm.get('acceptTerms')?.touched"
+              [attr.aria-describedby]="registerForm.get('acceptTerms')?.hasError('required') && registerForm.get('acceptTerms')?.touched ? 'terms-required' : null"
+            >
+            <span>J'accepte les
+              <a href="/terms" target="_blank">Conditions d'utilisation</a>
+              et la
               <a href="/privacy" target="_blank">Politique de confidentialité</a>
             </span>
           </label>
-          <div class="error-message" *ngIf="registerForm.get('acceptTerms')?.hasError('required') && registerForm.get('acceptTerms')?.touched">
+          <div
+            class="error-message"
+            id="terms-required"
+            *ngIf="registerForm.get('acceptTerms')?.hasError('required') && registerForm.get('acceptTerms')?.touched"
+          >
             Vous devez accepter les conditions d'utilisation
           </div>
         </div>
