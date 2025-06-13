@@ -1,7 +1,16 @@
-import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDividerModule } from '@angular/material/divider';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -9,7 +18,20 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatButtonModule,
+    MatListModule,
+    MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDividerModule
+  ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
@@ -17,8 +39,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   showSearch = false;
   notificationCount = 0;
   quickTrackingNumber: string = '';
-  activeDropdown: string | null = null;
-  isMobileMenuOpen = false;
+  @ViewChild('drawer') drawer!: MatSidenav;
   private routerSubscription: Subscription;
   isDesktop = window.innerWidth >= 992;
 
@@ -47,16 +68,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private closeAllMenus(): void {
-    this.activeDropdown = null;
-    this.isMobileMenuOpen = false;
+    this.drawer?.close();
     this.showSearch = false;
   }
 
   toggleSearch(): void {
     this.showSearch = !this.showSearch;
-    if (this.showSearch) {
-      this.activeDropdown = null;
-    }
   }
 
   quickTrack(): void {
@@ -73,47 +90,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   toggleMobileMenu(): void {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    if (!this.isMobileMenuOpen) {
-      this.activeDropdown = null;
-    }
+    this.drawer.toggle();
   }
 
-  toggleDropdown(event: Event, dropdown: string): void {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    if (this.activeDropdown === dropdown) {
-      this.activeDropdown = null;
-    } else {
-      this.activeDropdown = dropdown;
-    }
 
-    // Sur mobile, ajuster le scroll pour voir le menu déroulant
-    if (!this.isDesktop && this.activeDropdown) {
-      setTimeout(() => {
-        const dropdownElement = (event.target as HTMLElement).closest('.dropdown');
-        dropdownElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 100);
-    }
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown') && 
-        !target.closest('.navbar__toggle') && 
-        !target.closest('.navbar__search')) {
-      this.closeAllMenus();
-    }
-  }
 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.checkScreenSize();
-    if (this.isDesktop) {
-      this.isMobileMenuOpen = false;
-    }
   }
 
   @HostListener('window:keydown.escape')
