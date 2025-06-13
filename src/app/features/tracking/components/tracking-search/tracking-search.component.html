@@ -6,25 +6,13 @@
   
   <div class="search-form-container">
     <form class="search-form" (submit)="onSearch($event)">
-      <div class="input-group">
-        <div class="input-icon">
-          <i class="fas fa-search"></i>
-        </div>
-        <input 
-          type="text" 
-          class="search-input" 
-          [(ngModel)]="trackingNumber" 
-          [ngModelOptions]="{standalone: true}"
-          placeholder="Entrez le numéro de suivi (ex: GLX123456789)" 
-          autocomplete="off"
-          aria-label="Numéro de suivi"
-          required
-        >
-        <button type="submit" class="search-button" [disabled]="!trackingNumber">
-          <span class="button-text">Suivre</span>
-          <i class="fas fa-arrow-right"></i>
-        </button>
-      </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Numéro de suivi</mat-label>
+        <input matInput type="text" [(ngModel)]="trackingNumber" [ngModelOptions]="{standalone: true}" placeholder="Entrez le numéro de suivi (ex: GLX123456789)" autocomplete="off" required>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!trackingNumber">
+        Suivre
+      </button>
       <div class="search-example">
         Exemple: <span class="example-number" (click)="useExampleNumber()">GLX123456789</span>
       </div>
