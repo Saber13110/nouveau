@@ -198,6 +198,10 @@
     align-items: center;
     gap: 0.5rem;
 
+    app-theme-toggle {
+      color: white;
+    }
+
     .search-btn {
       background: none;
       border: none;
