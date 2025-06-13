@@ -3,21 +3,21 @@
 ======================= -->
 <section class="hero">
   <div class="hero__content">
-    <h1 class="hero__title">Track your packages in real-time</h1>
-    <p class="hero__subtitle">Enter your tracking number to know the status of your delivery</p>
+    <h1 class="hero__title">Suivez vos colis en temps réel</h1>
+    <p class="hero__subtitle">Entrez votre numéro de suivi pour connaître le statut de votre livraison</p>
 
     <div class="hero__features">
       <div class="hero__feature-card" [class.active]="selectedHeroFeature === 'barcode_scan'" (click)="selectHeroFeature('barcode_scan')">
         <i class="fas fa-barcode hero__feature-icon"></i>
-        <p class="hero__feature-text">Scan<br>Barcode</p>
+        <p class="hero__feature-text">Scanner<br>le code-barres</p>
       </div>
       <div class="hero__feature-card" [class.active]="selectedHeroFeature === null" (click)="selectHeroFeature(null)">
         <i class="fas fa-search hero__feature-icon"></i>
-        <p class="hero__feature-text">TRACK</p>
+        <p class="hero__feature-text">SUIVRE</p>
       </div>
       <div class="hero__feature-card" [class.active]="selectedHeroFeature === 'obtain_proof'" (click)="selectHeroFeature('obtain_proof')">
         <i class="fas fa-file-alt hero__feature-icon"></i>
-        <p class="hero__feature-text">Obtain your<br>proof</p>
+        <p class="hero__feature-text">Obtenir votre<br>preuve</p>
       </div>
     </div>
 
@@ -28,10 +28,10 @@
       <div *ngIf="selectedHeroFeature === null" class="tracking-form">
         <form [formGroup]="trackingForm" (ngSubmit)="onSubmit()">
           <div class="tracking-form__input-group">
-            <input type="text" formControlName="trackingNumber" class="tracking-form__input" placeholder="Enter your tracking number">
+            <input type="text" formControlName="trackingNumber" class="tracking-form__input" placeholder="Entrez votre numéro de suivi">
             <button type="submit" class="tracking-form__btn">
               <i class="fas fa-search"></i>
-              Track
+              Suivre
             </button>
           </div>
           <!-- Barcode scan option removed from default form -->
@@ -40,24 +40,24 @@
 
       <!-- Barcode Scan Option -->
       <div *ngIf="selectedHeroFeature === 'barcode_scan'" class="barcode-scan-option">
-        <p>Upload a barcode image or use Pro Scan to track your package.</p>
+        <p>Téléchargez une image du code-barres ou utilisez Pro Scan pour suivre votre colis.</p>
         <div class="upload-box" (click)="fileInput.click()">
           <i class="fas fa-cloud-upload-alt upload-icon"></i>
-          <p>Drag and drop or click to upload</p>
+          <p>Glissez-déposez ou cliquez pour téléverser</p>
           <input type="file" accept="image/*" (change)="onBarcodeFileSelected($event)" #fileInput hidden>
         </div>
-        <button class="btn btn--primary mt-3">Pro Scan (Webcam - Coming Soon)</button>
+        <button class="btn btn--primary mt-3">Pro Scan (Webcam - Bientôt disponible)</button>
       </div>
 
       <!-- Obtain Your Proof Option -->
       <div *ngIf="selectedHeroFeature === 'obtain_proof'" class="obtain-proof-option">
-        <p>Enter tracking ID to download your proof of delivery.</p>
+        <p>Entrez l'identifiant de suivi pour télécharger votre preuve de livraison.</p>
         <form [formGroup]="trackingForm" (ngSubmit)="onSubmit()">
           <div class="tracking-form__input-group">
-            <input type="text" formControlName="trackingNumber" class="tracking-form__input" placeholder="Enter tracking ID">
+            <input type="text" formControlName="trackingNumber" class="tracking-form__input" placeholder="Entrez l'ID de suivi">
             <button type="submit" class="tracking-form__btn">
               <i class="fas fa-download"></i>
-              Download Proof
+              Télécharger la preuve
             </button>
           </div>
         </form>
@@ -73,8 +73,8 @@
 <section class="services">
   <div class="container">
     <div class="section-header">
-      <h2 class="section-title">Our Services</h2>
-      <p class="section-subtitle">Delivery solutions tailored to your needs</p>
+      <h2 class="section-title">Nos Services</h2>
+      <p class="section-subtitle">Des solutions de livraison adaptées à vos besoins</p>
     </div>
 
     <div class="services__list">
@@ -87,7 +87,7 @@
           <h3>{{ service.title }}</h3>
           <p>{{ service.description }}</p>
           <a [href]="service.link" class="service-item__link btn btn--outline-primary">
-            CONTACT US FOR MORE INFO
+            CONTACTEZ-NOUS POUR PLUS D'INFOS
             <i class="fas fa-arrow-right"></i>
           </a>
         </div>
@@ -103,8 +103,8 @@
 <section class="news">
   <div class="container">
     <div class="section-header">
-      <h2 class="section-title">Latest News</h2>
-      <p class="section-subtitle">Stay informed about our latest news</p>
+      <h2 class="section-title">Dernières actualités</h2>
+      <p class="section-subtitle">Restez informé de nos dernières nouvelles</p>
     </div>
     <div class="news__grid">
       <div class="news__card" *ngFor="let item of news">        <div class="news__card-image">
@@ -116,7 +116,7 @@
           <h3>{{item.title}}</h3>
           <p>{{item.content}}</p>
           <a [routerLink]="['/news', item.slug]" class="news__card-link">
-            Read More
+            Lire la suite
             <i class="fas fa-arrow-right"></i>
           </a>
         </div>
@@ -131,8 +131,8 @@
 <section class="locations-section">
   <div class="container">
     <div class="section-header">
-      <h2 class="section-title">Our Locations</h2>
-      <p class="section-subtitle">Find the nearest agency to you</p>
+      <h2 class="section-title">Nos agences</h2>
+      <p class="section-subtitle">Trouvez l'agence la plus proche de chez vous</p>
     </div>
     <div class="locations-container">
       <div id="map" class="map-container"></div>
@@ -159,8 +159,8 @@
 <section class="faq">
   <div class="container">
     <div class="section-header">
-      <h2 class="section-title">Frequently Asked Questions</h2>
-      <p class="section-subtitle">Find quick answers to your questions</p>
+      <h2 class="section-title">Questions fréquentes</h2>
+      <p class="section-subtitle">Trouvez rapidement des réponses à vos questions</p>
     </div>
     <div class="faq__container">
       <div class="faq__item" *ngFor="let faq of faqList">
@@ -181,16 +181,16 @@
 ======================= -->
 <section class="cta">
   <div class="cta__content">
-    <h2>Need Help?</h2>
-    <p>Our team is available 24/7 to assist you</p>
+    <h2>Besoin d'aide&nbsp;?</h2>
+    <p>Notre équipe est disponible 24h/24 et 7j/7 pour vous aider</p>
     <div class="cta__buttons">
       <a href="/contact" class="btn btn--primary">
         <i class="fas fa-headset"></i>
-        Contact Us
+        Contactez-nous
       </a>
       <a href="/support" class="btn btn--secondary">
         <i class="fas fa-question-circle"></i>
-        Help Center
+        Centre d'aide
       </a>
     </div>
   </div>
