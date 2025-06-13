@@ -23,19 +23,35 @@
         <div class="form-field">
           <label for="verificationCode">Code de vérification</label>
           <div class="code-input-container">
-            <input 
-              type="text" 
+            <input
+              type="text"
               id="verificationCode"
               formControlName="verificationCode"
               placeholder="123456"
               maxlength="6"
               class="code-input"
-              [class.error]="verificationForm.get('verificationCode')?.invalid && verificationForm.get('verificationCode')?.touched">
+              [class.error]="verificationForm.get('verificationCode')?.invalid && verificationForm.get('verificationCode')?.touched"
+              [attr.aria-invalid]="verificationForm.get('verificationCode')?.invalid && verificationForm.get('verificationCode')?.touched"
+              [attr.aria-describedby]="
+                verificationForm.get('verificationCode')?.hasError('required') && verificationForm.get('verificationCode')?.touched
+                  ? 'code-required'
+                  : verificationForm.get('verificationCode')?.hasError('pattern') && verificationForm.get('verificationCode')?.touched
+                    ? 'code-format'
+                    : null
+              ">
           </div>
-          <div class="error-message" *ngIf="verificationForm.get('verificationCode')?.hasError('required') && verificationForm.get('verificationCode')?.touched">
+          <div
+            class="error-message"
+            id="code-required"
+            *ngIf="verificationForm.get('verificationCode')?.hasError('required') && verificationForm.get('verificationCode')?.touched"
+          >
             Le code de vérification est requis
           </div>
-          <div class="error-message" *ngIf="verificationForm.get('verificationCode')?.hasError('pattern') && verificationForm.get('verificationCode')?.touched">
+          <div
+            class="error-message"
+            id="code-format"
+            *ngIf="verificationForm.get('verificationCode')?.hasError('pattern') && verificationForm.get('verificationCode')?.touched"
+          >
             Le code doit contenir exactement 6 chiffres
           </div>
         </div>

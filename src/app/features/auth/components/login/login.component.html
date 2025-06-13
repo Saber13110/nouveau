@@ -25,19 +25,35 @@
         <div class="form-field">
           <label for="email">Adresse email</label>
           <div class="input-group">
-            <input 
-              type="email" 
+            <input
+              type="email"
               id="email"
               formControlName="email"
               placeholder="votre.email@exemple.com"
               autocomplete="email"
-              [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+              [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+              [attr.aria-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+              [attr.aria-describedby]="
+                loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched
+                  ? 'email-required'
+                  : loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched
+                    ? 'email-format'
+                    : null
+              ">
             <span class="icon">📧</span>
           </div>
-          <div class="error-message" *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
+          <div
+            class="error-message"
+            id="email-required"
+            *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched"
+          >
             L'email est requis
           </div>
-          <div class="error-message" *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched">
+          <div
+            class="error-message"
+            id="email-format"
+            *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched"
+          >
             Veuillez entrer un email valide
           </div>
         </div>
@@ -46,13 +62,15 @@
         <div class="form-field">
           <label for="password">Mot de passe</label>
           <div class="input-group">
-            <input 
+            <input
               [type]="hidePassword ? 'password' : 'text'"
               id="password"
               formControlName="password"
               placeholder="Votre mot de passe"
               autocomplete="current-password"
-              [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              [attr.aria-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              [attr.aria-describedby]="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched ? 'password-required' : null">
             <button 
               type="button"
               class="toggle-password"
@@ -60,7 +78,11 @@
               {{ hidePassword ? '👁️' : '🙈' }}
             </button>
           </div>
-          <div class="error-message" *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
+          <div
+            class="error-message"
+            id="password-required"
+            *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched"
+          >
             Le mot de passe est requis
           </div>
         </div>
