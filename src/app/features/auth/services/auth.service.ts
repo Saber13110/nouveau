@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { tap, catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 
 // Interfaces pour les types de données
@@ -25,9 +25,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   access_token: string;
-  refresh_token: string;
-  user: User;
-  expires_in: number;
+  token_type: string;
 }
 
 export interface RegisterRequest {
@@ -37,11 +35,6 @@ export interface RegisterRequest {
   password: string;
 }
 
-export interface RegisterResponse {
-  message: string;
-  user: Partial<User>;
-  verification_required: boolean;
-}
 
 export interface VerifyEmailRequest {
   email: string;
@@ -97,11 +90,19 @@ export class AuthService {
     }
   }
 
-  login(credentials: LoginRequest): Observable<LoginResponse> {
+  login(credentials: LoginRequest): Observable<User> {
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials)
       .pipe(
         tap(response => {
           this.handleAuthSuccess(response);
+        }),
+        switchMap(() => this.http.get<User>(`${this.API_URL}/me`, {
+          headers: this.getAuthHeaders()
+        })),
+        tap(user => {
+          this.currentUserSubject.next(user);
+          this.isAuthenticatedSubject.next(true);
+          localStorage.setItem(this.USER_KEY, JSON.stringify(user));
         }),
         catchError(error => {
           console.error('Login error:', error);
@@ -110,8 +111,8 @@ export class AuthService {
       );
   }
 
-  register(userData: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.API_URL}/register`, userData)
+  register(userData: RegisterRequest): Observable<User> {
+    return this.http.post<User>(`${this.API_URL}/register`, userData)
       .pipe(
         catchError(error => {
           console.error('Registration error:', error);
@@ -120,11 +121,17 @@ export class AuthService {
       );
   }
 
-  verifyEmail(verificationData: VerifyEmailRequest): Observable<LoginResponse> {
+  verifyEmail(verificationData: VerifyEmailRequest): Observable<User> {
     return this.http.post<LoginResponse>(`${this.API_URL}/verify-email`, verificationData)
       .pipe(
         tap(response => {
           this.handleAuthSuccess(response);
+        }),
+        switchMap(() => this.http.get<User>(`${this.API_URL}/me`, { headers: this.getAuthHeaders() })),
+        tap(user => {
+          this.currentUserSubject.next(user);
+          this.isAuthenticatedSubject.next(true);
+          localStorage.setItem(this.USER_KEY, JSON.stringify(user));
         }),
         catchError(error => {
           console.error('Email verification error:', error);
@@ -163,11 +170,17 @@ export class AuthService {
       );
   }
 
-  loginWithGoogle(googleToken: string): Observable<LoginResponse> {
+  loginWithGoogle(googleToken: string): Observable<User> {
     return this.http.post<LoginResponse>(`${this.API_URL}/google`, { token: googleToken })
       .pipe(
         tap(response => {
           this.handleAuthSuccess(response);
+        }),
+        switchMap(() => this.http.get<User>(`${this.API_URL}/me`, { headers: this.getAuthHeaders() })),
+        tap(user => {
+          this.currentUserSubject.next(user);
+          this.isAuthenticatedSubject.next(true);
+          localStorage.setItem(this.USER_KEY, JSON.stringify(user));
         }),
         catchError(error => {
           console.error('Google login error:', error);
@@ -246,11 +259,6 @@ export class AuthService {
 
   private handleAuthSuccess(response: LoginResponse): void {
     localStorage.setItem(this.TOKEN_KEY, response.access_token);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refresh_token);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-
-    this.currentUserSubject.next(response.user);
-    this.isAuthenticatedSubject.next(true);
   }
 
   updateUser(userData: Partial<User>): void {
