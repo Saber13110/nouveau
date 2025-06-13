@@ -39,13 +39,28 @@
     --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --border-radius: 8px;
     --border-radius-lg: 12px;
+
+    /* Light/Dark theme tokens */
+    --background-color: #f5f7fa;
+    --surface-color: #ffffff;
+    --text-color: var(--gray-900);
+    --background-color-dark: #1f2937;
+    --surface-color-dark: #374151;
+    --text-color-dark: var(--gray-100);
+}
+
+.dark-theme {
+    --background-color: var(--background-color-dark);
+    --surface-color: var(--surface-color-dark);
+    --text-color: var(--text-color-dark);
+    color-scheme: dark;
 }
 
 /* Styles de base globaux */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #f5f7fa;
-    color: var(--gray-900);
+    background-color: var(--background-color);
+    color: var(--text-color);
     line-height: 1.6;
     font-size: 16px;
     margin: 0;
@@ -112,7 +127,7 @@ button:hover {
 }
 
 .card {
-    background: white;
+    background: var(--surface-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
@@ -248,7 +263,7 @@ label {
 }
 
 .modal-content {
-    background: white;
+    background: var(--surface-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-xl);
     overflow: hidden;
